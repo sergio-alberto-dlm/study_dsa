@@ -1,0 +1,13 @@
+{
+  "id": "daily-temperatures",
+  "title": "Daily Temperatures",
+  "topic": "Stacks & Queues",
+  "patterns": ["monotonic stack"],
+  "source": "LeetCode",
+  "leetcode_url": "https://leetcode.com/problems/daily-temperatures/",
+  "hints": [
+    "For each day you are waiting on a future event. What do you keep around while you wait?",
+    "Monotonic stack: keep indices of days still waiting for a warmer day.",
+    "Keep the stack's temperatures decreasing; when a warmer day arrives, pop and resolve every colder day on top."
+  ]
+}

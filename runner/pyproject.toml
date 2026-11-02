@@ -1,0 +1,9 @@
+[project]
+name = "dsa-runner"
+version = "0.1.0"
+description = "Runs a learner's solution against a Problem's tests in a separate, time-limited Python process."
+requires-python = ">=3.9"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
