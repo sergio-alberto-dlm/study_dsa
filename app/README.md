@@ -8,7 +8,7 @@ npm install
 npm start
 ```
 
-`npm install` needs Node 22.12 or newer, because Electron's installer does. On Node 22.11, use `NODE_OPTIONS=--experimental-require-module npm install`. Submissions run on the system `python3`.
+`npm install` needs Node 22.12 or newer, because Electron's installer does. Submissions run on the system `python3`.
 
 The app reads Problems from `problems/` (format: `runner/README.md`) and keeps its history in `history.db`, both at the repo root. The app creates `history.db` on first launch. Commit it, because the history is meant to live in git.
 
