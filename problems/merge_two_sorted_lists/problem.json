@@ -1,0 +1,13 @@
+{
+  "id": "merge-two-sorted-lists",
+  "title": "Merge Two Sorted Lists",
+  "topic": "Linked Lists",
+  "patterns": ["dummy head + two pointers"],
+  "source": "LeetCode",
+  "leetcode_url": "https://leetcode.com/problems/merge-two-sorted-lists/",
+  "hints": [
+    "You only ever need to compare the two current front nodes.",
+    "Dummy head + two pointers: build the result behind a placeholder node.",
+    "Attach the smaller front node to the tail, advance that list, and attach whatever remains at the end."
+  ]
+}

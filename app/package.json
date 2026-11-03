@@ -1,0 +1,24 @@
+{
+  "name": "dsa-study",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Desktop app for working through the DSA study Plan.",
+  "main": "dist/main.cjs",
+  "scripts": {
+    "build": "node build.mjs",
+    "start": "node build.mjs && electron .",
+    "typecheck": "tsc --noEmit",
+    "test": "ELECTRON_RUN_AS_NODE=1 electron node_modules/vitest/vitest.mjs run"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "electron": "^45.2.1",
+    "esbuild": "^0.28.2",
+    "monaco-editor": "^0.57.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.12"
+  },
+  "overrides": {
+    "dompurify": "^3.4.17"
+  }
+}
