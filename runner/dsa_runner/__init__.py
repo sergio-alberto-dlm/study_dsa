@@ -37,8 +37,14 @@ def run_submission(problem_dir, code, time_limit=DEFAULT_TIME_LIMIT_SEC):
         try:
             stdout, _ = proc.communicate(timeout=time_limit)
         except subprocess.TimeoutExpired:
-            os.killpg(proc.pid, signal.SIGKILL)
-            proc.communicate()
+            try:
+                os.killpg(proc.pid, signal.SIGKILL)
+            except (ProcessLookupError, PermissionError):
+                pass  # The group is already gone: the solution exited, leaving a detached process.
+            # That detached process may still hold the pipes, so don't wait for them to close.
+            proc.stdout.close()
+            proc.stderr.close()
+            proc.wait()
             return Result(status="timeout")
     try:
         report = json.loads(stdout)

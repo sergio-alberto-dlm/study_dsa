@@ -43,6 +43,15 @@ def describe(exc):
     return f"{name}: {exc}" if str(exc) else name
 
 
+def raised_in_file(exc, path):
+    tb = exc.__traceback__
+    while tb:
+        if tb.tb_frame.f_code.co_filename == path:
+            return True
+        tb = tb.tb_next
+    return False
+
+
 def main(problem_dir, solution_file):
     try:
         solution = load_module(
@@ -57,14 +66,34 @@ def main(problem_dir, solution_file):
     except BaseException as exc:
         return {"status": "error", "message": f"The Problem's tests could not load: {describe(exc)}"}
     # vars() keeps definition order, so "first failing case" means first as written.
-    for name, test in vars(tests).items():
-        if name.startswith("test_") and callable(test):
-            try:
-                test(solution, check)
-            except CaseFailed as failure:
-                return {"status": "failed", "failing_case": failure.case}
-            except BaseException as exc:
+    test_functions = [
+        (name, test)
+        for name, test in vars(tests).items()
+        if name.startswith("test_") and callable(test)
+    ]
+    if not test_functions:
+        return {
+            "status": "error",
+            "message": "The Problem has no tests: tests.py defines no test_ functions",
+        }
+    for name, test in test_functions:
+        try:
+            test(solution, check)
+        except CaseFailed as failure:
+            return {"status": "failed", "failing_case": failure.case}
+        except BaseException as exc:
+            missing_function = str(exc).startswith("module 'solution' has no attribute")
+            if missing_function or raised_in_file(exc, solution_file):
                 return {"status": "error", "message": describe(exc)}
+            # The solution returned, and the test choked on what it got back: a wrong answer.
+            return {
+                "status": "failed",
+                "failing_case": {
+                    "input": name,
+                    "actual": describe(exc),
+                    "expected": "a result the tests can read",
+                },
+            }
     return {"status": "passed"}
 
 

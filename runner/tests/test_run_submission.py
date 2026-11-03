@@ -204,3 +204,54 @@ def test_problem_whose_tests_cannot_load_returns_error_naming_the_tests(tmp_path
         "The Problem's tests could not load: "
         "ModuleNotFoundError: No module named 'a_module_that_does_not_exist'"
     )
+
+
+def test_solution_returning_something_the_tests_cannot_read_fails_instead_of_erroring():
+    returns_nothing = """
+def daily_temperatures(temperatures):
+    pass
+"""
+    result = run_submission(DAILY_TEMPERATURES, returns_nothing)
+
+    assert result.status == "failed"
+    assert result.failing_case == {
+        "input": "test_cases",
+        "actual": "TypeError: 'NoneType' object is not iterable",
+        "expected": "a result the tests can read",
+    }
+
+
+def test_solution_missing_the_expected_function_returns_error():
+    misnamed = """
+def daily_temps(temperatures):
+    return []
+"""
+    result = run_submission(DAILY_TEMPERATURES, misnamed)
+
+    assert result.status == "error"
+    assert result.message == "AttributeError: module 'solution' has no attribute 'daily_temperatures'"
+
+
+def test_problem_with_no_tests_returns_error_instead_of_passing(tmp_path):
+    (tmp_path / "tests.py").write_text("def check_misnamed(solution, check):\n    check(1, 2)\n")
+
+    result = run_submission(tmp_path, CORRECT_DAILY_TEMPERATURES)
+
+    assert result.status == "error"
+    assert result.message == "The Problem has no tests: tests.py defines no test_ functions"
+
+
+def test_solution_that_leaves_a_detached_process_behind_still_times_out():
+    # The detached process holds the report pipe open after the solution's own process exits.
+    detaching = CORRECT_DAILY_TEMPERATURES + """
+import subprocess
+import sys
+
+subprocess.Popen([sys.executable, "-c", "import time; time.sleep(5)"], start_new_session=True)
+"""
+    started = time.monotonic()
+    result = run_submission(DAILY_TEMPERATURES, detaching, time_limit=1)
+    elapsed = time.monotonic() - started
+
+    assert result.status == "timeout"
+    assert elapsed < 3

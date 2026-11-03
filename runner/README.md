@@ -32,7 +32,9 @@ def test_examples(solution, check):
 ```
 
 - `check(actual, expected, input=...)` stops at the first mismatch, and that becomes the reported failing case. For results where any order is acceptable, normalise them before calling `check`.
-- An exception raised by the solution is reported as `error`.
+- An exception raised by the solution is reported as `error`, and so is a missing solution function.
+- An exception raised by the test itself, such as `list(got)` when the solution returned `None`, is reported as `failed`. Its `input` is the test's name, and its `actual` is the exception.
+- A `tests.py` that can't load, or that defines no `test_` functions, is reported as `error`.
 - `dsa_helpers` provides `ListNode`, `TreeNode`, `build_list`, `read_list` (with a node limit, so cycles can't hang) and `build_tree` (LeetCode level order; returns the root and a value-to-node map).
 - The solution can use `ListNode` and `TreeNode` without importing them, as on LeetCode.
 
